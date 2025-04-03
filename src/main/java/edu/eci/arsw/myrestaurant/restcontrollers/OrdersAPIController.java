@@ -38,45 +38,25 @@ import edu.eci.arsw.myrestaurant.services.RestaurantOrderServices;
 @RequestMapping(value = "/orders")
 public class OrdersAPIController {
     @Autowired
-    private RestaurantOrderServices orderServices;
-    @Autowired
-    @Qualifier("basicBillCalculator")
-    private BillCalculator billCalculator;
- 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllOrders() {
-        try {
-            Set<Integer> tables = orderServices.getTablesWithOrders();
-            if (tables.isEmpty()) {
-                return new ResponseEntity<>("No hay órdenes registradas", HttpStatus.NO_CONTENT);
-            }
- 
-            JSONArray ordersArray = new JSONArray();
-            for (Integer table : tables) {
-                Order order = orderServices.getTableOrder(table);
-                JSONObject orderJson = new JSONObject();
-                // Add table information
-                orderJson.put("mesa", table);
-                // Add products information
-                JSONArray productsArray = new JSONArray();
-                for (String productName : order.getOrderedDishes()) {
-                    JSONObject productJson = new JSONObject();
-                    RestaurantProduct product = orderServices.getProductByName(productName);
-                    productJson.put("producto", productName);
-                    productJson.put("cantidad", order.getDishOrderedAmount(productName));
-                    productJson.put("precio", product.getPrice());
-                    productsArray.put(productJson);
-                }
-                orderJson.put("productos", productsArray);
-                // Calculate and add total using BasicBillCalculator
-                int total = orderServices.calculateTableBill(table);
-                orderJson.put("valorTotal", total);
-                ordersArray.put(orderJson);
-            }
-            return new ResponseEntity<>(ordersArray.toString(), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error al procesar las órdenes: " + e.getMessage(), 
-                                     HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+     RestaurantOrderServices ros;
+  
+     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+     public ResponseEntity<?> allOrders() {
+         try {
+             if (ros.getTablesWithOrders().isEmpty()) {
+                 return new ResponseEntity<>("No hay órdenes registradas", HttpStatus.NO_CONTENT);
+             }
+             JSONArray jsonArray = new JSONArray();
+             for (Integer orderId : ros.getTablesWithOrders()) {
+                 JSONObject json = new JSONObject(ros.getTableOrder(orderId));
+                 json.put("mesa", orderId);
+                 json.put("valorTotal", ros.calculateTableBill(orderId));
+                 jsonArray.put(json);
+             }
+             return new ResponseEntity<>(jsonArray.toString(), HttpStatus.OK);
+  
+         } catch (Exception ex) {
+             return new ResponseEntity<>("Error interno del servidor: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 }
