@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
-    
+    @Autowired
     BillCalculator calc = null;
 
     public RestaurantOrderServicesStub() {
