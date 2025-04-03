@@ -9,6 +9,8 @@ import edu.eci.arsw.myrestaurant.model.Order;
 import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
 import java.util.Set;
 
+import org.springframework.stereotype.Service;
+
 /**
  *
  * @author hcadavid
