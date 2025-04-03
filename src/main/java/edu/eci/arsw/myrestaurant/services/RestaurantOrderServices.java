@@ -13,6 +13,8 @@ import java.util.Set;
  *
  * @author hcadavid
  */
+
+@Service
 public interface RestaurantOrderServices {
 
     void addNewOrderToTable(Order o) throws OrderServicesException;
