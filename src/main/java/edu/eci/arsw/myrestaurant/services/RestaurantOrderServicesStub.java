@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+@Service
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
 
     @Autowired
